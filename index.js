@@ -124,11 +124,12 @@ function saveImage(dirs, answers, module) {
         console.log(chalk.green(`Saving image for ${module}`));
         console.log(chalk.green(`*****************************************************`));
         const repo = repoList.find(e => e.tag === module);
+        let latestFile = `LATEST_${module.toUpperCase()}`;
         if (module === 'nginx') {
-            module = 'proxy';
+            latestFile = `LATEST_PROXY`;
         }
         process.chdir(dirs.WORKSPACE);
-        const LATEST_BUILD = fs.readFileSync(`LATEST_${module.toUpperCase()}`, 'utf-8').trim();
+        const LATEST_BUILD = fs.readFileSync(latestFile, 'utf-8').trim();
         const yamlContents = fs.readFileSync(`${repo.name}/${module}.yaml`, 'utf-8');
         const lines = yamlContents.split('\n');
         const newLines = [];
