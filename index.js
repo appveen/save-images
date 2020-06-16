@@ -173,7 +173,27 @@ function saveImage(dirs, answers, module) {
                 }
                 console.log(stdout);
                 console.log(stderr);
-                resolve();
+                if (module == 'sm') {
+                    exec(`docker tag odp:base.dev odp:base.${answers.release} && docker save -o odp_base.${answers.release}.tar odp:base.${answers.release} && bzip2 odp_base.${answers.release}.tar`, function (err, stdout, stderr) {
+                        if (err) {
+                            return reject(err);
+                        }
+                        console.log(stdout);
+                        console.log(stderr);
+                        resolve();
+                    });
+                } else if (module == 'b2b') {
+                    exec(`docker tag odp:b2b.runner.dev odp:b2b.runner.${answers.release} && docker save -o odp_b2b.runner.${answers.release}.tar odp:b2b.runner.${answers.release} && bzip2 odp_b2b.runner.${answers.release}.tar`, function (err, stdout, stderr) {
+                        if (err) {
+                            return reject(err);
+                        }
+                        console.log(stdout);
+                        console.log(stderr);
+                        resolve();
+                    });
+                } else {
+                    resolve();
+                }
             });
         });
     });
