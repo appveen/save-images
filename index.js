@@ -81,11 +81,21 @@ const repoList = [
             },
             {
                 when: (answers) => answers.repoList.length > 0,
+                message: 'Enter Release',
+                type: 'input',
+                name: 'release',
+            },
+            {
+                when: (answers) => answers.repoList.length > 0,
                 message: 'Enter new Tag',
                 type: 'input',
                 name: 'tag',
             }
         ]);
+        if (!answers.release || !answers.tag) {
+            console.log(chalk.red('Please provied all info!'))
+            process.exit(0);
+        }
         const IMAGES_DIR = path.join(os.homedir(), 'SAVED_IMAGES', dateformat(Date.now(), 'yyyy-mm-dd'));
         try {
             execSync(`mkdir -p ${IMAGES_DIR}`);
@@ -113,15 +123,43 @@ function saveImage(dirs, answers, module) {
         console.log(chalk.green(`*****************************************************`));
         console.log(chalk.green(`Saving image for ${module}`));
         console.log(chalk.green(`*****************************************************`));
+        const repo = repoList.find(e => e.tag === module);
         if (module === 'nginx') {
             module = 'proxy';
         }
         process.chdir(dirs.WORKSPACE);
-        const LATEST_BUILD = fs.readFileSync(`LATEST_` + module.toUpperCase(), 'utf-8').trim();
+        const LATEST_BUILD = fs.readFileSync(`LATEST_${module.toUpperCase()}`, 'utf-8').trim();
+        const yamlContents = fs.readFileSync(`${repo.name}/${module}.yaml`, 'utf-8');
+        const lines = yamlContents.split('\n');
+        const newLines = [];
+        lines.forEach(line => {
+            if (line.indexOf('imagePullSecrets') == -1 && line.indexOf('name: regsecret') == -1) {
+                line.replace(/__release_tag__/g, answers.release);
+                line.replace(/__release__/g, answers.tag);
+                newLines.push(line);
+            }
+        });
         process.chdir(dirs.IMAGES_DIR);
         const imageFrom = `odp:${module}.${LATEST_BUILD}`;
         const imageTo = `odp:${module}.${answers.tag}`;
         const saveTo = `odp_${module}.${answers.tag}.tar`;
+        const yamlFile = `${module}.${answers.tag}.yaml`;
+        fs.writeFileSync(yamlFile, newLines.join('\n'), 'utf-8');
+        try {
+            fs.unlinkSync(yamlFile);
+        } catch (e) {
+
+        }
+        try {
+            fs.unlinkSync(saveTo);
+        } catch (e) {
+
+        }
+        try {
+            fs.unlinkSync(saveTo + '.bz2');
+        } catch (e) {
+
+        }
         exec(`docker tag ${imageFrom} ${imageTo}`, function (err, stdout, stderr) {
             if (err) {
                 return reject(err);
