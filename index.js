@@ -134,8 +134,8 @@ function saveImage(dirs, answers, module) {
         const newLines = [];
         lines.forEach(line => {
             if (line.indexOf('imagePullSecrets') == -1 && line.indexOf('name: regsecret') == -1) {
-                line.replace(/__release_tag__/g, answers.release);
-                line.replace(/__release__/g, answers.tag);
+                line = line.replace(/__release_tag__/g, answers.release);
+                line = line.replace(/__release__/g, answers.tag);
                 newLines.push(line);
             }
         });
@@ -144,7 +144,6 @@ function saveImage(dirs, answers, module) {
         const imageTo = `odp:${module}.${answers.tag}`;
         const saveTo = `odp_${module}.${answers.tag}.tar`;
         const yamlFile = `${module}.${answers.tag}.yaml`;
-        fs.writeFileSync(yamlFile, newLines.join('\n'), 'utf-8');
         try {
             fs.unlinkSync(yamlFile);
         } catch (e) {
@@ -160,6 +159,7 @@ function saveImage(dirs, answers, module) {
         } catch (e) {
 
         }
+        fs.writeFileSync(yamlFile, newLines.join('\n'), 'utf-8');
         exec(`docker tag ${imageFrom} ${imageTo}`, function (err, stdout, stderr) {
             if (err) {
                 return reject(err);
