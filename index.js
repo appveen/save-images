@@ -6,7 +6,7 @@ const chalk = require('chalk');
 const dateformat = require('dateformat');
 const { exec, execSync } = require('child_process');
 
-const WORKSPACE = '/var/lib/jenkins/workspace';
+let WORKSPACE = '/var/lib/jenkins/workspace';
 const repoList = [
     {
         name: "odp-b2b-agent",
@@ -74,6 +74,19 @@ const repoList = [
     try {
         const answers = await inquirer.prompt([
             {
+                message: 'Choose Workspace',
+                choices: ['jenkins', 'orcli'],
+                type: 'list',
+                name: 'workspace',
+                default: 'jenkins'
+            },
+            {
+                when: (answers) => answers.workspace === 'orcli',
+                message: 'Code Base Branch',
+                type: 'input',
+                name: 'branch',
+            },
+            {
                 message: 'Choose modules to save',
                 choices: repoList.map(e => e.tag),
                 type: 'checkbox',
@@ -92,6 +105,7 @@ const repoList = [
                 name: 'tag',
             }
         ]);
+
         if (!answers.release || !answers.tag) {
             console.log(chalk.red('Please provied all info!'))
             process.exit(0);
@@ -100,7 +114,18 @@ const repoList = [
         try {
             execSync(`mkdir -p ${IMAGES_DIR}`);
         } catch (e) {
-
+            console.log(chalk.red(`*****************************************************`));
+            console.log(chalk.red(`ERROR`));
+            console.log(chalk.red(`*****************************************************`));
+            console.log(e);
+            console.log(chalk.red(`*****************************************************`));
+            process.exit(0);
+        }
+        if (answers.workspace === 'orcli') {
+            if (['dev', 'perf', 'data.stack', 'data-stack'].indexOf(answers.branch) == -1 && answers.branch.split('/').length == 1) {
+                answers.branch = 'release/' + answers.branch;
+            }
+            WORKSPACE = path.join(os.homedir(), 'orcli_workspace', answers.branch);
         }
         const final = await answers.repoList.reduce((prev, curr) => {
             return prev.then(() => {
@@ -137,8 +162,8 @@ function saveImage(dirs, answers, module) {
             if (line.indexOf('imagePullSecrets') == -1 && line.indexOf('name: regsecret') == -1) {
                 line = line.replace(/__release_tag__/g, answers.release);
                 line = line.replace(/__release__/g, answers.tag);
-                newLines.push(line);
             }
+            newLines.push(line);
         });
         process.chdir(dirs.IMAGES_DIR);
         const imageFrom = `odp:${module}.${LATEST_BUILD}`;
