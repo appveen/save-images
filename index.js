@@ -188,50 +188,30 @@ function saveImage(dirs, answers, module) {
 
         }
         fs.writeFileSync(yamlFile, newLines.join('\n'), 'utf-8');
-        // fs.writeFileSync(path.join(dirs.TEMP_BUILDS_DIR,'Dockerfile'),`FROM ${imageFrom}\nENV IMAGE_TAG=${answers.tag}`, 'utf-8');
-        exec(`docker tag ${imageFrom} ${imageTo}`, function (err, stdout, stderr) {
-            if (err) {
-                return reject(err);
-            }
-            console.log(stdout);
-            console.log(stderr);
-            exec(`docker save -o ${saveTo} ${imageTo} && bzip2 ${saveTo}`, function (err, stdout, stderr) {
-                if (err) {
-                    return reject(err);
-                }
-                console.log(stdout);
-                console.log(stderr);
-                if (module == 'sm') {
-                    exec(`docker tag odp:base.${LATEST_BUILD} odp:base.${answers.tag} && docker save -o odp_base.${answers.tag}.tar odp:base.${answers.tag} && bzip2 odp_base.${answers.tag}.tar`, function (err, stdout, stderr) {
-                        if (err) {
-                            return reject(err);
-                        }
-                        console.log(stdout);
-                        console.log(stderr);
-                        resolve();
-                    });
-                } else if (module == 'b2b') {
-                    exec(`docker tag odp:b2b.runner.dev odp:b2b.runner.${answers.release} && docker save -o odp_b2b.runner.${answers.release}.tar odp:b2b.runner.${answers.release} && bzip2 odp_b2b.runner.${answers.release}.tar`, function (err, stdout, stderr) {
-                        if (err) {
-                            return reject(err);
-                        }
-                        console.log(stdout);
-                        console.log(stderr);
-                        resolve();
-                    });
-                } else if (module == 'pm') {
-                    exec(`docker tag odp:b2b.base.${LATEST_BUILD} odp:b2b.base.${answers.tag} && docker save -o odp_b2b.base.${answers.tag}.tar odp:b2b.base.${answers.tag} && bzip2 odp_b2b.base.${answers.tag}.tar`, function (err, stdout, stderr) {
-                        if (err) {
-                            return reject(err);
-                        }
-                        console.log(stdout);
-                        console.log(stderr);
-                        resolve();
-                    });
-                } else {
-                    resolve();
-                }
-            });
+        fs.writeFileSync(path.join(dirs.TEMP_BUILDS_DIR, 'Dockerfile'), `FROM ${imageFrom}\nENV IMAGE_TAG=${answers.tag}`, 'utf-8');
+        let logs = execSync(`docker build -t ${imageTo} .`, {
+            cwd: dirs.TEMP_BUILDS_DIR
         });
+        console.log(logs);
+        logs = execSync(`docker save -o ${saveTo} ${imageTo} && bzip2 ${saveTo}`, {
+            cwd: dirs.IMAGES_DIR
+        });
+        console.log(logs);
+        logs = '';
+        if (module == 'sm') {
+            logs = execSync(`docker tag odp:base.${LATEST_BUILD} odp:base.${answers.tag} && docker save -o odp_base.${answers.tag}.tar odp:base.${answers.tag} && bzip2 odp_base.${answers.tag}.tar`, {
+                cwd: dirs.IMAGES_DIR
+            });
+        } else if (module == 'b2b') {
+            logs = execSync(`docker tag odp:b2b.runner.dev odp:b2b.runner.${answers.release} && docker save -o odp_b2b.runner.${answers.release}.tar odp:b2b.runner.${answers.release} && bzip2 odp_b2b.runner.${answers.release}.tar`, {
+                cwd: dirs.IMAGES_DIR
+            });
+        } else if (module == 'pm') {
+            logs = execSync(`docker tag odp:b2b.base.${LATEST_BUILD} odp:b2b.base.${answers.tag} && docker save -o odp_b2b.base.${answers.tag}.tar odp:b2b.base.${answers.tag} && bzip2 odp_b2b.base.${answers.tag}.tar`, {
+                cwd: dirs.IMAGES_DIR
+            });
+        }
+        console.log(logs);
+        resolve();
     });
 }
