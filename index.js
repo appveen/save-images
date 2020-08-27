@@ -192,12 +192,12 @@ function saveImage(dirs, answers, module) {
         let logs = execSync(`docker build -t ${imageTo} .`, {
             cwd: dirs.TEMP_BUILDS_DIR
         });
-        console.log(logs);
+        console.log(logs.toString('utf-8'));
         logs = execSync(`docker save -o ${saveTo} ${imageTo} && bzip2 ${saveTo}`, {
             cwd: dirs.IMAGES_DIR
         });
-        console.log(logs);
-        logs = '';
+        console.log(logs.toString('utf-8'));
+        logs = Buffer.from('');
         if (module == 'sm') {
             logs = execSync(`docker tag odp:base.${LATEST_BUILD} odp:base.${answers.tag} && docker save -o odp_base.${answers.tag}.tar odp:base.${answers.tag} && bzip2 odp_base.${answers.tag}.tar`, {
                 cwd: dirs.IMAGES_DIR
@@ -211,7 +211,7 @@ function saveImage(dirs, answers, module) {
                 cwd: dirs.IMAGES_DIR
             });
         }
-        console.log(logs);
+        console.log(logs.toString('utf-8'));
         resolve();
     });
 }
