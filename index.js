@@ -111,8 +111,10 @@ const repoList = [
             process.exit(0);
         }
         const IMAGES_DIR = path.join(os.homedir(), 'SAVED_IMAGES', dateformat(Date.now(), 'yyyy-mm-dd'));
+        const TEMP_BUILDS_DIR = path.join(os.tmpdir(), 'TEMP_BUILDS');
         try {
             execSync(`mkdir -p ${IMAGES_DIR}`);
+            execSync(`mkdir -p ${TEMP_BUILDS_DIR}`);
         } catch (e) {
             console.log(chalk.red(`*****************************************************`));
             console.log(chalk.red(`ERROR`));
@@ -129,7 +131,7 @@ const repoList = [
         }
         const final = await answers.repoList.reduce((prev, curr) => {
             return prev.then(() => {
-                return saveImage({ IMAGES_DIR, WORKSPACE }, answers, curr);
+                return saveImage({ IMAGES_DIR, WORKSPACE, TEMP_BUILDS_DIR }, answers, curr);
             });
         }, Promise.resolve());
         process.chdir(IMAGES_DIR);
@@ -186,6 +188,7 @@ function saveImage(dirs, answers, module) {
 
         }
         fs.writeFileSync(yamlFile, newLines.join('\n'), 'utf-8');
+        // fs.writeFileSync(path.join(dirs.TEMP_BUILDS_DIR,'Dockerfile'),`FROM ${imageFrom}\nENV IMAGE_TAG=${answers.tag}`, 'utf-8');
         exec(`docker tag ${imageFrom} ${imageTo}`, function (err, stdout, stderr) {
             if (err) {
                 return reject(err);
@@ -199,7 +202,7 @@ function saveImage(dirs, answers, module) {
                 console.log(stdout);
                 console.log(stderr);
                 if (module == 'sm') {
-                    exec(`docker tag odp:base.dev odp:base.${answers.release} && docker save -o odp_base.${answers.release}.tar odp:base.${answers.release} && bzip2 odp_base.${answers.release}.tar`, function (err, stdout, stderr) {
+                    exec(`docker tag odp:base.${LATEST_BUILD} odp:base.${answers.tag} && docker save -o odp_base.${answers.tag}.tar odp:base.${answers.tag} && bzip2 odp_base.${answers.tag}.tar`, function (err, stdout, stderr) {
                         if (err) {
                             return reject(err);
                         }
@@ -209,6 +212,15 @@ function saveImage(dirs, answers, module) {
                     });
                 } else if (module == 'b2b') {
                     exec(`docker tag odp:b2b.runner.dev odp:b2b.runner.${answers.release} && docker save -o odp_b2b.runner.${answers.release}.tar odp:b2b.runner.${answers.release} && bzip2 odp_b2b.runner.${answers.release}.tar`, function (err, stdout, stderr) {
+                        if (err) {
+                            return reject(err);
+                        }
+                        console.log(stdout);
+                        console.log(stderr);
+                        resolve();
+                    });
+                } else if (module == 'pm') {
+                    exec(`docker tag odp:b2b.base.${LATEST_BUILD} odp:b2b.base.${answers.tag} && docker save -o odp_b2b.base.${answers.tag}.tar odp:b2b.base.${answers.tag} && bzip2 odp_b2b.base.${answers.tag}.tar`, function (err, stdout, stderr) {
                         if (err) {
                             return reject(err);
                         }
