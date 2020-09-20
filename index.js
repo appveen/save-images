@@ -29,6 +29,11 @@ const repoList = [
         tag: "dm"
     },
     {
+        name: "odp-dedupe",
+        latest: "LATEST_DE",
+        tag: "de"
+    },
+    {
         name: "odp-gateway",
         latest: "LATEST_GW",
         tag: "gw"
