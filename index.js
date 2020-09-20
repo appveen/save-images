@@ -124,9 +124,9 @@ const repoList = [
             process.exit(0);
         }
         if (answers.workspace === 'orcli') {
-            if (['dev', 'perf', 'data.stack', 'data-stack'].indexOf(answers.branch) == -1 && answers.branch.split('/').length == 1) {
-                answers.branch = 'release/' + answers.branch;
-            }
+            // if (['dev', 'perf', 'data.stack', 'data-stack', 'dedupe'].indexOf(answers.branch) == -1 && answers.branch.split('/').length == 1) {
+            //     answers.branch = 'release/' + answers.branch;
+            // }
             WORKSPACE = path.join(os.homedir(), 'orcli_workspace', answers.branch);
         }
         const final = await answers.repoList.reduce((prev, curr) => {
