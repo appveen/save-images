@@ -1,4 +1,3 @@
 #!/bin/bash
 
-
-pkg -t node12-linux-x64 -o save-images .
+pkg -o builds/save-images -t node12-linux-x64,node12-macos-x64,node12-win-x64 .
