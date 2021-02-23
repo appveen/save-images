@@ -9,69 +9,69 @@ const { exec, execSync } = require('child_process');
 let WORKSPACE = '/var/lib/jenkins/workspace';
 const repoList = [
     {
-        name: "odp-b2b-agent",
+        name: "ds-b2b-agent",
         latest: "LATEST_B2BGW",
         tag: "b2bgw"
     },
     {
-        name: "odp-b2b-backend-generator",
+        name: "ds-b2b-backend-generator",
         latest: "LATEST_B2B",
         tag: "b2b"
     },
     {
-        name: "odp-b2b-partner-manager",
+        name: "ds-b2b-partner-manager",
         latest: "LATEST_PM",
         tag: "pm"
     },
     {
-        name: "odp-deployment-manager",
+        name: "ds-deployment-manager",
         latest: "LATEST_DM",
         tag: "dm"
     },
     {
-        name: "odp-dedupe",
+        name: "ds-dedupe",
         latest: "LATEST_DE",
         tag: "de"
     },
     {
-        name: "odp-gateway",
+        name: "ds-gateway",
         latest: "LATEST_GW",
         tag: "gw"
     },
     {
-        name: "odp-monitoring",
+        name: "ds-monitoring",
         latest: "LATEST_MON",
         tag: "mon"
     },
     {
-        name: "odp-notification-engine",
+        name: "ds-notification-engine",
         latest: "LATEST_NE",
         tag: "ne"
     },
     {
-        name: "odp-security",
+        name: "ds-security",
         latest: "LATEST_SEC",
         tag: "sec"
     },
     {
-        name: "odp-service-manager",
+        name: "ds-service-manager",
         latest: "LATEST_SM",
         tag: "sm"
     },
     {
-        name: "odp-workflow",
+        name: "ds-workflow",
         latest: "LATEST_WF",
         tag: "wf"
     },
     {
-        name: "odp-user-management",
+        name: "ds-user-management",
         latest: "LATEST_USER",
         tag: "user"
     },
     {
         name: "odp-proxy",
         latest: "LATEST_PROXY",
-        tag: "nginx"
+        tag: "proxy"
     }
 ];
 
@@ -173,9 +173,9 @@ function saveImage(dirs, answers, module) {
             newLines.push(line);
         });
         process.chdir(dirs.IMAGES_DIR);
-        const imageFrom = `odp:${module}.${LATEST_BUILD}`;
-        const imageTo = `odp:${module}.${answers.tag}`;
-        const saveTo = `odp_${module}.${answers.tag}.tar`;
+        const imageFrom = `data.stack:${module}.${LATEST_BUILD}`;
+        const imageTo = `data.stack:${module}.${answers.tag}`;
+        const saveTo = `data.stack_${module}.${answers.tag}.tar`;
         const yamlFile = `${module}.${answers.tag}.yaml`;
         try {
             fs.unlinkSync(yamlFile);
@@ -205,10 +205,6 @@ function saveImage(dirs, answers, module) {
         logs = Buffer.from('');
         if (module == 'sm') {
             logs = execSync(`docker tag odp:base.${LATEST_BUILD} odp:base.${answers.tag} && docker save -o odp_base.${answers.tag}.tar odp:base.${answers.tag} && bzip2 odp_base.${answers.tag}.tar`, {
-                cwd: dirs.IMAGES_DIR
-            });
-        } else if (module == 'b2b') {
-            logs = execSync(`docker tag odp:b2b.runner.dev odp:b2b.runner.${answers.release} && docker save -o odp_b2b.runner.${answers.release}.tar odp:b2b.runner.${answers.release} && bzip2 odp_b2b.runner.${answers.release}.tar`, {
                 cwd: dirs.IMAGES_DIR
             });
         } else if (module == 'pm') {
