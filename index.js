@@ -14,11 +14,6 @@ const repoList = [
         tag: "b2bgw"
     },
     {
-        name: "ds-b2b-backend-generator",
-        latest: "LATEST_B2B",
-        tag: "b2b"
-    },
-    {
         name: "ds-b2b-partner-manager",
         latest: "LATEST_PM",
         tag: "pm"
@@ -27,11 +22,6 @@ const repoList = [
         name: "ds-deployment-manager",
         latest: "LATEST_DM",
         tag: "dm"
-    },
-    {
-        name: "ds-dedupe",
-        latest: "LATEST_DE",
-        tag: "de"
     },
     {
         name: "ds-gateway",
@@ -57,11 +47,6 @@ const repoList = [
         name: "ds-service-manager",
         latest: "LATEST_SM",
         tag: "sm"
-    },
-    {
-        name: "ds-workflow",
-        latest: "LATEST_WF",
-        tag: "wf"
     },
     {
         name: "ds-user-management",
