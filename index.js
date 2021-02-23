@@ -54,7 +54,7 @@ const repoList = [
         tag: "user"
     },
     {
-        name: "odp-proxy",
+        name: "data.stack-proxy",
         latest: "LATEST_PROXY",
         tag: "proxy"
     }
@@ -189,11 +189,11 @@ function saveImage(dirs, answers, module) {
         console.log(logs.toString('utf-8'));
         logs = Buffer.from('');
         if (module == 'sm') {
-            logs = execSync(`docker tag odp:base.${LATEST_BUILD} odp:base.${answers.tag} && docker save -o odp_base.${answers.tag}.tar odp:base.${answers.tag} && bzip2 odp_base.${answers.tag}.tar`, {
+            logs = execSync(`docker tag data.stack:base.${LATEST_BUILD} data.stack:base.${answers.tag} && docker save -o data.stack_base.${answers.tag}.tar data.stack:base.${answers.tag} && bzip2 data.stack_base.${answers.tag}.tar`, {
                 cwd: dirs.IMAGES_DIR
             });
         } else if (module == 'pm') {
-            logs = execSync(`docker tag odp:b2b.base.${LATEST_BUILD} odp:b2b.base.${answers.tag} && docker save -o odp_b2b.base.${answers.tag}.tar odp:b2b.base.${answers.tag} && bzip2 odp_b2b.base.${answers.tag}.tar`, {
+            logs = execSync(`docker tag data.stack:b2b.base.${LATEST_BUILD} data.stack:b2b.base.${answers.tag} && docker save -o data.stack_b2b.base.${answers.tag}.tar data.stack:b2b.base.${answers.tag} && bzip2 data.stack_b2b.base.${answers.tag}.tar`, {
                 cwd: dirs.IMAGES_DIR
             });
         }
