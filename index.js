@@ -56,7 +56,7 @@ const repoList = [
     {
         name: "data.stack-proxy",
         latest: "LATEST_PROXY",
-        tag: "proxy"
+        tag: "nginx"
     }
 ];
 
