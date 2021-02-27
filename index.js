@@ -159,9 +159,9 @@ function saveImage(dirs, answers, module) {
         });
         process.chdir(dirs.IMAGES_DIR);
         const imageFrom = `data.stack:${module}.${LATEST_BUILD}`;
-        const imageTo;
-        const saveTo;
-        const yamlFile;
+        let imageTo;
+        let saveTo;
+        let yamlFile;
         if (module === 'nginx') {
             imageTo = `data.stack:${module}.${answers.tag}`;
             saveTo = `data.stack_proxy.${answers.tag}.tar`;

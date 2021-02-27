@@ -7,7 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "pkg -o builds/save-images -t node12-linux-x64,node12-macos-x64,node12-win-x64 ."
   },
-  "bin": "index.js",
+  "bin": {
+    "save-images": "index.js"
+  },
   "author": "Jugnu Agrawal",
   "license": "ISC",
   "dependencies": {
