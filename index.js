@@ -158,15 +158,17 @@ function saveImage(dirs, answers, module) {
             newLines.push(line);
         });
         process.chdir(dirs.IMAGES_DIR);
-        const imageFrom = `data.stack:${module}.${LATEST_BUILD}`;
+        let imageFrom;
         let imageTo;
         let saveTo;
         let yamlFile;
         if (module === 'nginx') {
-            imageTo = `data.stack:${module}.${answers.tag}`;
+            imageFrom = `odp:${module}.${LATEST_BUILD}`;
+            imageTo = `data.stack:proxy.${answers.tag}`;
             saveTo = `data.stack_proxy.${answers.tag}.tar`;
             yamlFile = `proxy.${answers.tag}.yaml`;
         } else {
+            imageFrom = `data.stack:${module}.${LATEST_BUILD}`;
             imageTo = `data.stack:${module}.${answers.tag}`;
             saveTo = `data.stack_${module}.${answers.tag}.tar`;
             yamlFile = `${module}.${answers.tag}.yaml`;
