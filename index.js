@@ -54,7 +54,7 @@ const repoList = [
         tag: "user"
     },
     {
-        name: "data.stack-proxy",
+        name: "ds-proxy",
         latest: "LATEST_PROXY",
         tag: "nginx"
     }
@@ -159,9 +159,18 @@ function saveImage(dirs, answers, module) {
         });
         process.chdir(dirs.IMAGES_DIR);
         const imageFrom = `data.stack:${module}.${LATEST_BUILD}`;
-        const imageTo = `data.stack:${module}.${answers.tag}`;
-        const saveTo = `data.stack_${module}.${answers.tag}.tar`;
-        const yamlFile = `${module}.${answers.tag}.yaml`;
+        const imageTo;
+        const saveTo;
+        const yamlFile;
+        if (module === 'nginx') {
+            imageTo = `data.stack:${module}.${answers.tag}`;
+            saveTo = `data.stack_proxy.${answers.tag}.tar`;
+            yamlFile = `proxy.${answers.tag}.yaml`;
+        } else {
+            imageTo = `data.stack:${module}.${answers.tag}`;
+            saveTo = `data.stack_${module}.${answers.tag}.tar`;
+            yamlFile = `${module}.${answers.tag}.yaml`;
+        }
         try {
             fs.unlinkSync(yamlFile);
         } catch (e) {
