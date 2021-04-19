@@ -56,7 +56,7 @@ const repoList = [
     {
         name: "ds-proxy",
         latest: "LATEST_PROXY",
-        tag: "nginx"
+        tag: "proxy"
     }
 ];
 
@@ -142,9 +142,6 @@ function saveImage(dirs, answers, module) {
         console.log(chalk.green(`*****************************************************`));
         const repo = repoList.find(e => e.tag === module);
         let latestFile = `LATEST_${module.toUpperCase()}`;
-        if (module === 'nginx') {
-            latestFile = `LATEST_PROXY`;
-        }
         process.chdir(dirs.WORKSPACE);
         const LATEST_BUILD = fs.readFileSync(latestFile, 'utf-8').trim();
         const yamlContents = fs.readFileSync(`${repo.name}/${module}.yaml`, 'utf-8');
@@ -162,17 +159,10 @@ function saveImage(dirs, answers, module) {
         let imageTo;
         let saveTo;
         let yamlFile;
-        if (module === 'nginx') {
-            imageFrom = `odp:${module}.${LATEST_BUILD}`;
-            imageTo = `data.stack:proxy.${answers.tag}`;
-            saveTo = `data.stack_proxy.${answers.tag}.tar`;
-            yamlFile = `proxy.${answers.tag}.yaml`;
-        } else {
-            imageFrom = `data.stack:${module}.${LATEST_BUILD}`;
-            imageTo = `data.stack:${module}.${answers.tag}`;
-            saveTo = `data.stack_${module}.${answers.tag}.tar`;
-            yamlFile = `${module}.${answers.tag}.yaml`;
-        }
+        imageFrom = `data.stack:${module}.${LATEST_BUILD}`;
+        imageTo = `data.stack:${module}.${answers.tag}`;
+        saveTo = `data.stack_${module}.${answers.tag}.tar`;
+        yamlFile = `${module}.${answers.tag}.yaml`;
         try {
             fs.unlinkSync(yamlFile);
         } catch (e) {
