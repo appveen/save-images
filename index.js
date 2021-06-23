@@ -88,6 +88,12 @@ const repoList = [
                 type: 'input',
                 name: 'release',
             },
+            // {
+            //     when: (answers) => answers.repoList.length > 0,
+            //     message: 'Enter Repository URL (if any)',
+            //     type: 'input',
+            //     name: 'repository',
+            // },
             {
                 when: (answers) => answers.repoList.length > 0,
                 message: 'Enter new Tag',
@@ -161,6 +167,9 @@ function saveImage(dirs, answers, module) {
         let yamlFile;
         imageFrom = `data.stack:${module}.${LATEST_BUILD}`;
         imageTo = `data.stack:${module}.${answers.tag}`;
+        // if (answers.repository && answers.repository.trim()) {
+        //     imageTo = repository + '/' + imageTo;
+        // }
         saveTo = `data.stack_${module}.${answers.tag}.tar`;
         yamlFile = `${module}.${answers.tag}.yaml`;
         try {
@@ -187,6 +196,9 @@ function saveImage(dirs, answers, module) {
         logs = execSync(`docker save -o ${saveTo} ${imageTo} && bzip2 ${saveTo}`, {
             cwd: dirs.IMAGES_DIR
         });
+        // if (answers.repository && answers.repository.trim()) {
+        //     logs = execSync(`docker push ${imageTo}`);
+        // }
         console.log(logs.toString('utf-8'));
         logs = Buffer.from('');
         if (module == 'sm') {
@@ -195,6 +207,9 @@ function saveImage(dirs, answers, module) {
             });
         } else if (module == 'pm') {
             logs = execSync(`docker tag data.stack:b2b.base.${LATEST_BUILD} data.stack:b2b.base.${answers.tag} && docker save -o data.stack_b2b.base.${answers.tag}.tar data.stack:b2b.base.${answers.tag} && bzip2 data.stack_b2b.base.${answers.tag}.tar`, {
+                cwd: dirs.IMAGES_DIR
+            });
+            logs = execSync(`docker tag data.stack:faas.base.${LATEST_BUILD} data.stack:faas.base.${answers.tag} && docker save -o data.stack_faas.base.${answers.tag}.tar data.stack:faas.base.${answers.tag} && bzip2 data.stack_faas.base.${answers.tag}.tar`, {
                 cwd: dirs.IMAGES_DIR
             });
         }
